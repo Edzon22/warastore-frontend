@@ -1,0 +1,61 @@
+import React, { useState, useEffect } from 'react';
+
+function App() {
+  return (
+    <div className="min-h-screen bg-white text-gray-800 font-sans">
+      {/* 1. BARRA DE NOTIFICACIÓN SUPERIOR NEGRA */}
+      <div className="bg-black text-white text-xs py-2 text-center font-medium">
+        Tu confianza es nuestra prioridad en cada entrega.
+      </div>
+
+      {/* 2. NAVBAR PRINCIPAL */}
+      <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
+        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+          
+          {/* Buscador (Izquierda) */}
+          <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5 w-72">
+            <span className="text-gray-400 mr-2">🔍</span>
+            <input 
+              type="text" 
+              placeholder="¿QUÉ ESTÁS BUSCANDO?" 
+              className="outline-none text-xs w-full tracking-wider font-semibold"
+            />
+          </div>
+
+          {/* Logo Central */}
+          <div className="text-4xl font-black tracking-tighter text-black select-none cursor-pointer">
+            TOTTO
+          </div>
+
+          {/* Iconos (Derecha) */}
+          <div className="flex items-center space-x-6 text-xl">
+            <button className="hover:text-gray-600">👤</button>
+            <button className="hover:text-gray-600 relative">
+              🎒
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">1</span>
+            </button>
+          </div>
+
+        </div>
+
+        {/* 3. MENÚ HORIZONTAL DE CATEGORÍAS */}
+        <nav className="bg-white border-t border-gray-100 hidden md:block">
+          <div className="max-w-4xl mx-auto flex justify-between items-center h-10 text-xs font-bold tracking-widest text-gray-700">
+            {['VIAJE', 'MOCHILAS', 'ROPA', 'HOMBRE', 'MUJER', 'NIÑOS', 'ACCESORIOS', 'OFERTAS'].map((cat) => (
+              <a key={cat} href={`#${cat.toLowerCase()}`} className="hover:text-red-500 transition-colors">
+                {cat}
+              </a>
+            ))}
+          </div>
+        </nav>
+      </header>
+
+      {/* CONTENIDO PRINCIPAL (Lo llenaremos en el próximo paso) */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <p className="text-center text-gray-400 mt-10">La estructura base está lista. Aquí irán los filtros y productos.</p>
+      </main>
+    </div>
+  );
+}
+
+export default App;
