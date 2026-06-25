@@ -19,14 +19,15 @@ function App() {
   const TELEFONO_WHATSAPP = "59167411592"; 
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/productos')
+    // 🚀 CONECTADO AL BACKEND REAL EN RENDER
+    fetch('https://warastore-backend.onrender.com/api/productos')
       .then((res) => res.json())
       .then((data) => {
         setProductos(data);
         setCargando(false);
       })
       .catch((err) => {
-        console.error("Error conectando al servidor backend:", err);
+        console.error("Error conectando al servidor backend en Render:", err);
         setCargando(false);
       });
   }, []);
@@ -97,7 +98,6 @@ function App() {
     }
     
     if (categoriaActiva === 'OFERTAS') {
-      // Como pediste, aquí entran todos los artículos ya que vienen con etiqueta de nuevo o descuento
       return true; 
     }
 
@@ -158,19 +158,15 @@ function App() {
   return (
     <div className={`min-h-screen ${clases.bg} font-sans relative antialiased transition-colors duration-300`}>
       
-      {/* BARRA DE NOTIFICACIÓN SUPERIOR: PERSECUCIÓN MEJORADA */}
+      {/* BARRA DE NOTIFICACIÓN SUPERIOR */}
       <div className="bg-black text-white text-[10px] md:text-xs py-2 text-center font-semibold tracking-wider uppercase px-4 relative overflow-hidden h-12 flex items-center justify-center">
         <span className="relative z-10 select-none">
           Envíos a todo el país • Tu confianza es nuestra prioridad
         </span>
         <div className="absolute inset-0 flex items-center animate-[marquee_15s_linear_infinite] pointer-events-none whitespace-nowrap">
           <div className="flex items-center space-x-6">
-            <span className="text-3xl select-none inline-block transform -scale-x-100">
-              🐈‍⬛
-            </span>
-            <span className="text-[10px] opacity-90 animate-pulse inline-block transform -scale-x-100">
-              🦟
-            </span>
+            <span className="text-3xl select-none inline-block transform -scale-x-100">🐈‍⬛</span>
+            <span className="text-[10px] opacity-90 animate-pulse inline-block transform -scale-x-100">🦟</span>
           </div>
         </div>
       </div>
@@ -246,7 +242,7 @@ function App() {
           </div>
         </div>
 
-        {/* MENÚ DE CATEGORÍAS INTERACTIVO RECONFIGURADO */}
+        {/* MENÚ DE CATEGORÍAS */}
         <nav className={`border-t border-gray-100/10 hidden md:block ${tema === 'claro' ? 'bg-white' : 'bg-transparent'}`}>
           <div className="max-w-5xl mx-auto flex justify-between items-center h-11 text-[11px] lg:text-xs font-bold tracking-widest opacity-80">
             {['TODOS', 'NUEVOS', 'MOCHILAS', 'ROPA', 'HOMBRE', 'MUJER', 'ACCESORIOS', 'OFERTAS'].map((cat) => (
@@ -281,14 +277,11 @@ function App() {
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-current border-t-transparent"></div>
           </div>
         ) : productosFiltrados.length === 0 ? (
-          
-          /* MENSAJE PERSONALIZADO CUANDO NO SE ENCUENTRA EL PRODUCTO */
           <div className="text-center py-20 px-4 border border-dashed border-gray-300/30 rounded-xl max-w-xl mx-auto">
             <p className="text-lg font-bold tracking-wide">Aun no contamos con ese producto,</p>
             <p className="text-md font-semibold text-emerald-500 mt-1">pronto tendremos novedades.</p>
             <p className="text-xs text-gray-400 mt-4 italic font-mono uppercase tracking-widest">se vienen cositas :) </p>
           </div>
-
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {productosFiltrados.map((producto) => (
