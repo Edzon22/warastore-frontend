@@ -132,7 +132,8 @@ function App() {
         card: 'bg-gray-850 border-gray-700 text-white',
         header: 'bg-gray-950 border-gray-800 text-white',
         textoSecundario: 'text-gray-400',
-        input: 'bg-gray-800 border-gray-700 text-white'
+        input: 'bg-gray-800 border-gray-700 text-white',
+        icono: 'text-white' // Clase para iconos en modo oscuro
       };
     }
     if (tema === 'verde') {
@@ -141,7 +142,8 @@ function App() {
         card: 'bg-emerald-900 border-emerald-800 text-white',
         header: 'bg-emerald-950 border-emerald-800 text-white',
         textoSecundario: 'text-emerald-300',
-        input: 'bg-emerald-900 border-emerald-700 text-white'
+        input: 'bg-emerald-900 border-emerald-700 text-white',
+        icono: 'text-white' // Clase para iconos en modo verde
       };
     }
     return {
@@ -149,7 +151,8 @@ function App() {
       card: 'bg-white border-gray-200 text-gray-800',
       header: 'bg-white border-gray-200 text-black',
       textoSecundario: 'text-gray-500',
-      input: 'bg-gray-50 border-gray-300 text-gray-800'
+      input: 'bg-gray-50 border-gray-300 text-gray-800',
+      icono: 'text-black' // Clase para iconos en modo claro
     };
   };
 
@@ -231,8 +234,11 @@ function App() {
               </button>
             </div>
 
-            <button onClick={() => setCarritoAbierto(true)} className="relative transition-colors cursor-pointer p-1">
-              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            {/* ✅ CORRECCIÓN: Icono de bolsa ahora usa currentColor */}
+            <button onClick={() => setCarritoAbierto(true)} className={`relative transition-colors cursor-pointer p-1 ${clases.icono}`}>
+              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
               {carrito.reduce((acc, item) => acc + item.cantidad, 0) > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                   {carrito.reduce((acc, item) => acc + item.cantidad, 0)}
@@ -283,7 +289,8 @@ function App() {
             <p className="text-xs text-gray-400 mt-4 italic font-mono uppercase tracking-widest">se vienen cositas :) </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {/* ✅ CORRECCIÓN: Cuadrícula responsiva ajustada para móviles */}
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {productosFiltrados.map((producto) => (
               <div key={producto._id} className={`${clases.card} rounded-md overflow-hidden border hover:shadow-xl transition-all duration-300 group flex flex-col justify-between`}>
                 <div className="relative aspect-square bg-gray-100 overflow-hidden">
@@ -361,12 +368,12 @@ function App() {
         </div>
       )}
 
-      {/* BOTÓN FLOTANTE DE WHATSAPP */}
+      {/* ✅ CORRECCIÓN: Botón flotante de WhatsApp posicionado correctamente y con z-index */}
       <a 
         href={`https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent("¡Hola Wara'Store! Deseo hacer una consulta sobre los productos.")}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 bg-emerald-500 hover:bg-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:scale-105 transition-all z-30 cursor-pointer"
+        className="fixed bottom-6 right-6 bg-emerald-500 hover:bg-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:scale-105 transition-all z-50 cursor-pointer"
       >
         <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.858.002-2.634-1.013-5.112-2.86-6.961C16.634 1.937 14.159 1.921 11.53 1.92c-5.438 0-9.863 4.42-9.866 9.862-.001 1.702.461 3.366 1.337 4.815l-.997 3.644 3.737-.981z"/></svg>
       </a>
