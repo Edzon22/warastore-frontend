@@ -21,8 +21,14 @@ function App() {
 
   const TELEFONO_WHATSAPP = "59167411592"; 
 
-  // Colores por defecto solicitados
-  const COLORES_DISPONIBLES = ["Blanco", "Negro", "Rojo", "Azul", "Amarillo"];
+  // Mapeo de nombres a clases de color de Tailwind para la paleta visual
+  const PALETA_COLORES = [
+    { nombre: "Blanco", claseBg: "bg-white border-gray-300 text-black" },
+    { nombre: "Negro", claseBg: "bg-black border-black text-white" },
+    { nombre: "Rojo", claseBg: "bg-red-600 border-red-600 text-white" },
+    { nombre: "Azul", claseBg: "bg-blue-600 border-blue-600 text-white" },
+    { nombre: "Amarillo", claseBg: "bg-yellow-400 border-yellow-400 text-black" }
+  ];
 
   useEffect(() => {
     // 🚀 CONECTADO AL BACKEND REAL EN RENDER
@@ -53,7 +59,7 @@ function App() {
   };
 
   const agregarAlCarrito = (producto) => {
-    const colorSel = coloresSeleccionados[producto._id] || COLORES_DISPONIBLES[0];
+    const colorSel = coloresSeleccionados[producto._id] || PALETA_COLORES[0].nombre;
     const tipoSel = tiposCantidadSeleccionados[producto._id] || 'unidad';
     const precioUnitarioSel = obtenerPrecioActual(producto, tipoSel);
 
@@ -232,7 +238,9 @@ function App() {
             {productosFiltrados.map((producto) => {
               const tipoSel = tiposCantidadSeleccionados[producto._id] || 'unidad';
               const precioMostrado = obtenerPrecioActual(producto, tipoSel);
-              const colorSel = coloresSeleccionados[producto._id] || COLORES_DISPONIBLES[0];
+              
+              // Color seleccionado actualmente en este producto específico
+              const colorSel = coloresSeleccionados[producto._id] || PALETA_COLORES[0].nombre;
 
               return (
                 <div key={producto._id} className={`${clases.card} rounded-md overflow-hidden border hover:shadow-md transition-all duration-300 flex flex-col justify-between`}>
@@ -245,18 +253,28 @@ function App() {
                       <p className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">{producto.categoria || 'General'}</p>
                       <h3 className="text-xs font-bold mt-0.5 line-clamp-2 h-8">{producto.nombre}</h3>
                       
-                      {/* 🎨 MENÚ DESPLEGABLE DE COLORES */}
+                      {/* 🎨 PALETA VISUAL DE COLORES INTERACTIVOS */}
                       <div className="mt-2">
-                        <label className="text-[10px] font-bold block text-gray-400 uppercase mb-1">Color disponible:</label>
-                        <select 
-                          value={colorSel}
-                          onChange={(e) => setColoresSeleccionados({ ...coloresSeleccionados, [producto._id]: e.target.value })}
-                          className={`w-full text-xs font-semibold p-1.5 rounded border ${clases.input} outline-none cursor-pointer`}
-                        >
-                          {COLORES_DISPONIBLES.map(color => (
-                            <option key={color} value={color}>{color}</option>
-                          ))}
-                        </select>
+                        <label className="text-[10px] font-bold block text-gray-400 uppercase mb-1.5">
+                          Color: <span className="text-current font-extrabold">{colorSel}</span>
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          {PALETA_COLORES.map((color) => {
+                            const esSeleccionado = colorSel === color.nombre;
+                            return (
+                              <button
+                                key={color.nombre}
+                                title={color.nombre}
+                                onClick={() => setColoresSeleccionados({ ...coloresSeleccionados, [producto._id]: color.nombre })}
+                                className={`w-6 h-6 rounded-full border-2 cursor-pointer transition-all duration-200 ${color.claseBg} ${
+                                  esSeleccionado 
+                                    ? 'scale-125 ring-2 ring-offset-2 ring-emerald-500 shadow-md' 
+                                    : 'opacity-70 hover:opacity-100 hover:scale-110'
+                                }`}
+                              />
+                            );
+                          })}
+                        </div>
                       </div>
 
                       {/* 📦 MENÚ DESPLEGABLE DE CANTIDAD/MODALIDAD */}
@@ -291,16 +309,16 @@ function App() {
         )}
       </main>
 
-      {/* 📍 SECCIÓN DE UBICACIÓN, HORARIOS Y VISTA PREVIA DEL MAPA (ABAJO DE LA COLECCIÓN) */}
+      {/* 📍 SECCIÓN DE UBICACIÓN CORREGIDA Y MAPA INTEGRADO */}
       <section className="max-w-7xl mx-auto px-4 py-8 border-t border-gray-200/20">
         <div className={`p-5 rounded-xl border grid grid-cols-1 md:grid-cols-2 gap-6 text-xs shadow-xs ${clases.card}`}>
           <div className="flex flex-col justify-between space-y-4">
             <div>
               <h4 className="font-extrabold text-sm uppercase text-emerald-500 mb-2">
-                📍 Puesto Físico y Referencia
+                📍 Puesto Físico Exacto
               </h4>
               <p className="font-bold text-sm">Puesto 46</p>
-              <p className="text-gray-400 mt-0.5 font-semibold">Frente a la Galería San Antonio</p>
+              <p className="text-gray-400 mt-0.5 font-semibold">Ubicación exacta corregida en el mapa</p>
             </div>
 
             <div>
@@ -313,7 +331,7 @@ function App() {
 
             <div>
               <a 
-                href="https://maps.app.goo.gl/1PKiQH6AnM3Uo3gX6" 
+                href="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded uppercase tracking-wider transition-colors"
@@ -323,11 +341,11 @@ function App() {
             </div>
           </div>
 
-          {/* 🗺️ VISTA PREVIA EN VIVO DE GOOGLE MAPS */}
+          {/* 🗺️ VISTA PREVIA EN VIVO DE GOOGLE MAPS CORREGIDA */}
           <div className="w-full h-60 md:h-full min-h-[240px] rounded-lg overflow-hidden border border-gray-300/30 shadow-xs relative">
             <iframe 
-              title="Mapa de Ubicación Wara'Store"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.568461713481!2d-66.1557008!3d-17.4325068!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDI1JzU3LjAiUyA2NsKwMDknMjAuNSJX!5e0!3m2!1ses!2sbo!4v1700000000000!5m2!1ses!2sbo" 
+              title="Mapa de Ubicación Exacta Wara'Store"
+              src="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
               className="absolute inset-0 w-full h-full border-0"
               allowFullScreen="" 
               loading="lazy" 
