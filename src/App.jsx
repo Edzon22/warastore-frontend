@@ -5,7 +5,6 @@ function App() {
   const [carrito, setCarrito] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
-  const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
   
   // ESTADO PARA EL TEMA: 'claro', 'oscuro', 'verde'
   const [tema, setTema] = useState('claro');
@@ -30,7 +29,9 @@ function App() {
     fetch('https://warastore-backend.onrender.com/api/productos')
       .then((res) => res.json())
       .then((data) => {
-        setProductos(data);
+        if (Array.isArray(data)) {
+          setProductos(data);
+        }
         setCargando(false);
       })
       .catch((err) => {
@@ -42,7 +43,6 @@ function App() {
   // Función para obtener el precio dinámico adaptado temporalmente
   const obtenerPrecioActual = (producto, tipo) => {
     const precioBase = producto.precio_actual || 0;
-    // LÓGICA TEMPORAL: Mientras actualizamos la Base de Datos paso a paso
     if (tipo === 'cuarta') {
       return producto.precio_cuarta ? producto.precio_cuarta : (precioBase * 3); 
     }
@@ -232,17 +232,17 @@ function App() {
             {productosFiltrados.map((producto) => {
               const tipoSel = tiposCantidadSeleccionados[producto._id] || 'unidad';
               const precioMostrado = obtenerPrecioActual(producto, tipoSel);
-              const colorSel = coloresSeleccionados[producto._id] || COLORES_DISPOLIBLES || '';
+              const colorSel = coloresSeleccionados[producto._id] || COLORES_DISPONIBLES[0];
 
               return (
                 <div key={producto._id} className={`${clases.card} rounded-md overflow-hidden border hover:shadow-md transition-all duration-300 flex flex-col justify-between`}>
                   <div className="relative aspect-square bg-gray-100 overflow-hidden">
-                    <img src={producto.imagenes && producto.imagenes[0]} alt={producto.nombre} className="w-full h-full object-cover" />
+                    <img src={(producto.imagenes && producto.imagenes[0]) || 'https://via.placeholder.com/300'} alt={producto.nombre} className="w-full h-full object-cover" />
                   </div>
 
                   <div className="p-3 flex-grow flex flex-col justify-between">
                     <div>
-                      <p className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">{producto.categoria}</p>
+                      <p className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">{producto.categoria || 'General'}</p>
                       <h3 className="text-xs font-bold mt-0.5 line-clamp-2 h-8">{producto.nombre}</h3>
                       
                       {/* 🎨 MENÚ DESPLEGABLE DE COLORES */}
@@ -327,7 +327,7 @@ function App() {
           <div className="w-full h-60 md:h-full min-h-[240px] rounded-lg overflow-hidden border border-gray-300/30 shadow-xs relative">
             <iframe 
               title="Mapa de Ubicación Wara'Store"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3809.689728096181!2d-66.15549000000001!3d-17.404989999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDI0JzE4LjAiUyA2NiswOScxOS44Ilc!5e0!3m2!1ses!2sbo!4v1700000000000!5m2!1ses!2sbo" 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.568461713481!2d-66.1557008!3d-17.4325068!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDI1JzU3LjAiUyA2NsKwMDknMjAuNSJX!5e0!3m2!1ses!2sbo!4v1700000000000!5m2!1ses!2sbo" 
               className="absolute inset-0 w-full h-full border-0"
               allowFullScreen="" 
               loading="lazy" 
