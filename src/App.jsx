@@ -343,14 +343,14 @@ function App() {
 
           {/* 🗺️ VISTA PREVIA EN VIVO UTILIZANDO EMBED SEGURO PARA GOOGLE MAPS */}
           <div className="w-full h-60 md:h-full min-h-[240px] rounded-lg overflow-hidden border border-gray-300/30 shadow-xs relative">
-            <iframe 
-              title="Mapa de Ubicación Exacta Wara'Store"
-              src="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
-              className="absolute inset-0 w-full h-full border-0"
-              allowFullScreen="" 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+           <iframe 
+             title="Mapa de Ubicación Exacta Wara'Store"
+             src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3807.5113947470656!2d-66.1517411!3d-17.38722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2sbo!4v1719440000000!5m2!1ses-419!2sbo" 
+             className="absolute inset-0 w-full h-full border-0"
+             allowFullScreen="" 
+             loading="lazy" 
+             referrerPolicy="no-referrer-when-downgrade"
+           ></iframe>
           </div>
         </div>
       </section>
