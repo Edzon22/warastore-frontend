@@ -67,7 +67,7 @@ function App() {
     window.open(urlFinal, '_blank');
   };
 
-  // LÓGICA DE FILTRADO COMBINADO CORREGIDA CON TUS REGLAS DE NEGOCIO
+  // LÓGICA DE FILTRADO COMBINADO
   const normalizarTexto = (texto) => {
     return texto ? texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
   };
@@ -77,7 +77,6 @@ function App() {
     const nombreMatch = normalizarTexto(producto.nombre).includes(termino);
     const catTextoMatch = normalizarTexto(producto.categoria).includes(termino);
     
-    // Primero validamos el buscador por palabra clave
     if (busqueda && !(nombreMatch || catTextoMatch)) {
       return false;
     }
@@ -85,12 +84,9 @@ function App() {
     const catProd = normalizarTexto(producto.categoria);
     const nomProd = normalizarTexto(producto.nombre);
     
-    // Identificamos si el producto NO tiene género (mochilas, accesorios, gorras)
     const esSinGenero = catProd.includes("mochila") || catProd.includes("accesorio") || nomProd.includes("gorra");
-    // Identificamos si es una prenda de vestir (no es mochila ni accesorio ni gorra)
     const esPrendaVestir = !esSinGenero;
 
-    // Aplicación de reglas según el botón presionado
     if (categoriaActiva === 'TODOS') return true;
     
     if (categoriaActiva === 'NUEVOS') {
@@ -124,16 +120,15 @@ function App() {
     return catProd === normalizarTexto(categoriaActiva);
   });
 
-  // Estilos visuales dinámicos basados en el tema activo
   const obtenerClasesTema = () => {
     if (tema === 'oscuro') {
       return {
         bg: 'bg-gray-900 text-gray-100',
-        card: 'bg-gray-850 border-gray-700 text-white',
+        card: 'bg-gray-800 border-gray-700 text-white',
         header: 'bg-gray-950 border-gray-800 text-white',
         textoSecundario: 'text-gray-400',
         input: 'bg-gray-800 border-gray-700 text-white',
-        icono: 'text-white' // Clase para iconos en modo oscuro
+        icono: 'text-white'
       };
     }
     if (tema === 'verde') {
@@ -143,7 +138,7 @@ function App() {
         header: 'bg-emerald-950 border-emerald-800 text-white',
         textoSecundario: 'text-emerald-300',
         input: 'bg-emerald-900 border-emerald-700 text-white',
-        icono: 'text-white' // Clase para iconos en modo verde
+        icono: 'text-white'
       };
     }
     return {
@@ -152,7 +147,7 @@ function App() {
       header: 'bg-white border-gray-200 text-black',
       textoSecundario: 'text-gray-500',
       input: 'bg-gray-50 border-gray-300 text-gray-800',
-      icono: 'text-black' // Clase para iconos en modo claro
+      icono: 'text-black'
     };
   };
 
@@ -185,7 +180,7 @@ function App() {
             </svg>
           </button>
 
-          {/* BUSCADOR VINCULADO AL ESTADO */}
+          {/* BUSCADOR */}
           <div className={`hidden md:flex items-center border rounded-md px-3 py-1.5 w-64 lg:w-80 ${clases.input} transition-colors`}>
             <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             <input 
@@ -197,7 +192,7 @@ function App() {
             />
           </div>
 
-          {/* MARCA + LOGO DE GATO INTEGRADO */}
+          {/* MARCA + LOGO DE GATO */}
           <div className="flex items-center space-x-3 select-none cursor-pointer group">
             <div className="w-12 h-12 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center overflow-hidden border border-gray-700 shadow-sm">
               <img 
@@ -215,7 +210,7 @@ function App() {
           <div className="flex items-center space-x-3 md:space-x-4">
             <div className="flex items-center bg-gray-200/50 p-1 rounded-lg border border-gray-300/30">
               <button 
-                onClick={() => setTema('claro')} 
+                onClick={() => setTheme('claro')} 
                 className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${tema === 'claro' ? 'bg-white text-black shadow-xs' : 'text-gray-500 hover:text-black'}`}
               >
                 Claro
@@ -234,7 +229,7 @@ function App() {
               </button>
             </div>
 
-            {/* ✅ CORRECCIÓN: Icono de bolsa ahora usa currentColor */}
+            {/* Icono de bolsa adaptable */}
             <button onClick={() => setCarritoAbierto(true)} className={`relative transition-colors cursor-pointer p-1 ${clases.icono}`}>
               <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -289,14 +284,13 @@ function App() {
             <p className="text-xs text-gray-400 mt-4 italic font-mono uppercase tracking-widest">se vienen cositas :) </p>
           </div>
         ) : (
-          {/* ✅ CORRECCIÓN: Cuadrícula responsiva ajustada para móviles */}
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {productosFiltrados.map((producto) => (
               <div key={producto._id} className={`${clases.card} rounded-md overflow-hidden border hover:shadow-xl transition-all duration-300 group flex flex-col justify-between`}>
                 <div className="relative aspect-square bg-gray-100 overflow-hidden">
                   <img src={producto.imagenes && producto.imagenes[0]} alt={producto.nombre} className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" />
                   <span className="absolute top-2 left-2 bg-black text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider">
-                    {producto.etiquetas && producto.etiquetas[0] || 'Nuevo'}
+                    {(producto.etiquetas && producto.etiquetas[0]) || 'Nuevo'}
                   </span>
                 </div>
 
@@ -327,11 +321,11 @@ function App() {
         )}
       </main>
 
-      {/* SIDEBAR DEL CARRITO DE COMPRAS */}
+      {/* SIDEBAR DEL CARRITO */}
       {carritoAbierto && (
         <div className="fixed inset-0 bg-black/60 z-50 flex justify-end">
           <div className="absolute inset-0" onClick={() => setCarritoAbierto(false)}></div>
-          <div className="relative w-full max-w-md bg-white text-gray-900 h-full shadow-2xl flex flex-col justify-between z-101">
+          <div className="relative w-full max-w-md bg-white text-gray-900 h-full shadow-2xl flex flex-col justify-between z-50">
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <h3 className="text-md font-bold uppercase tracking-wide">Bolsa de Compras ({carrito.reduce((acc, item) => acc + item.cantidad, 0)})</h3>
               <button onClick={() => setCarritoAbierto(false)} className="text-gray-400 hover:text-black p-2 cursor-pointer">✕</button>
@@ -368,7 +362,7 @@ function App() {
         </div>
       )}
 
-      {/* ✅ CORRECCIÓN: Botón flotante de WhatsApp posicionado correctamente y con z-index */}
+      {/* Botón flotante de WhatsApp adaptable */}
       <a 
         href={`https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent("¡Hola Wara'Store! Deseo hacer una consulta sobre los productos.")}`}
         target="_blank"
