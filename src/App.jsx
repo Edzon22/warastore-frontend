@@ -334,18 +334,18 @@ function App() {
                 href="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded uppercase tracking-wider transition-colors"
+                className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Abrir en la App de Maps →
               </a>
             </div>
           </div>
 
-          {/* 🗺️ VISTA PREVIA EN VIVO DE GOOGLE MAPS CORREGIDA */}
+          {/* 🗺️ VISTA PREVIA EN VIVO UTILIZANDO EMBED SEGURO PARA GOOGLE MAPS */}
           <div className="w-full h-60 md:h-full min-h-[240px] rounded-lg overflow-hidden border border-gray-300/30 shadow-xs relative">
             <iframe 
               title="Mapa de Ubicación Exacta Wara'Store"
-              src="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
+              src="https://maps.google.com/maps?q=Cochabamba,%20Bolivia&t=&z=15&ie=UTF8&iwloc=&output=embed" 
               className="absolute inset-0 w-full h-full border-0"
               allowFullScreen="" 
               loading="lazy" 
