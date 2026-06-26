@@ -16,13 +16,14 @@ function App() {
   // ESTADO PARA LA CATEGORÍA SELECCIONADA
   const [categoriaActiva, setCategoriaActiva] = useState('TODOS');
 
-  // ESTADOS LOCALES PARA LA SELECCIÓN DE OPCIONES EN CADA PRODUCTO
-  // Guardamos el color seleccionado por productoId
+  // ESTADOS LOCALES PARA LA SELECCIÓN EN CADA PRODUCTO
   const [coloresSeleccionados, setColoresSeleccionados] = useState({});
-  // Guardamos el tipo de cantidad (unidad, cuarta, docena) seleccionado por productoId
   const [tiposCantidadSeleccionados, setTiposCantidadSeleccionados] = useState({});
 
   const TELEFONO_WHATSAPP = "59167411592"; 
+
+  // Colores por defecto solicitados
+  const COLORES_DISPONIBLES = ["Blanco", "Negro", "Rojo", "Azul", "Amarillo"];
 
   useEffect(() => {
     // 🚀 CONECTADO AL BACKEND REAL EN RENDER
@@ -38,19 +39,24 @@ function App() {
       });
   }, []);
 
-  // Función para obtener el precio dinámico según el tipo seleccionado
+  // Función para obtener el precio dinámico adaptado temporalmente
   const obtenerPrecioActual = (producto, tipo) => {
-    if (tipo === 'docena' && producto.precio_docena) return producto.precio_docena;
-    if (tipo === 'cuarta' && producto.precio_cuarta) return producto.precio_cuarta;
-    return producto.precio_actual; // Por defecto o unidad
+    const precioBase = producto.precio_actual || 0;
+    // LÓGICA TEMPORAL: Mientras actualizamos la Base de Datos paso a paso
+    if (tipo === 'cuarta') {
+      return producto.precio_cuarta ? producto.precio_cuarta : (precioBase * 3); 
+    }
+    if (tipo === 'docena') {
+      return producto.precio_docena ? producto.precio_docena : (precioBase * 10);
+    }
+    return precioBase; // Unidad
   };
 
   const agregarAlCarrito = (producto) => {
-    const colorSel = coloresSeleccionados[producto._id] || (producto.colores && producto.colores[0]) || 'Por defecto';
+    const colorSel = coloresSeleccionados[producto._id] || COLORES_DISPONIBLES[0];
     const tipoSel = tiposCantidadSeleccionados[producto._id] || 'unidad';
     const precioUnitarioSel = obtenerPrecioActual(producto, tipoSel);
 
-    // Creamos un ID único para la combinación en el carrito
     const comboId = `${producto._id}-${colorSel}-${tipoSel}`;
 
     const existe = carrito.find(item => item.comboId === comboId);
@@ -106,45 +112,21 @@ function App() {
     const nombreMatch = normalizarTexto(producto.nombre).includes(termino);
     const catTextoMatch = normalizarTexto(producto.categoria).includes(termino);
     
-    if (busqueda && !(nombreMatch || catTextoMatch)) {
-      return false;
-    }
+    if (busqueda && !(nombreMatch || catTextoMatch)) return false;
 
     const catProd = normalizarTexto(producto.categoria);
     const nomProd = normalizarTexto(producto.nombre);
-    
     const esSinGenero = catProd.includes("mochila") || catProd.includes("accesorio") || nomProd.includes("gorra");
     const esPrendaVestir = !esSinGenero;
 
     if (categoriaActiva === 'TODOS') return true;
-    
-    if (categoriaActiva === 'NUEVOS') {
-      return producto.etiquetas && producto.etiquetas.some(e => normalizarTexto(e).includes("nuevo"));
-    }
-    
-    if (categoriaActiva === 'OFERTAS') {
-      return true; 
-    }
-
-    if (categoriaActiva === 'HOMBRE') {
-      return catProd.includes("hombre") || esSinGenero;
-    }
-
-    if (categoriaActiva === 'MUJER') {
-      return catProd.includes("mujer") || esSinGenero;
-    }
-
-    if (categoriaActiva === 'ACCESORIOS') {
-      return esSinGenero;
-    }
-
-    if (categoriaActiva === 'ROPA') {
-      return esPrendaVestir;
-    }
-
-    if (categoriaActiva === 'MOCHILAS') {
-      return catProd.includes("mochila");
-    }
+    if (categoriaActiva === 'NUEVOS') return producto.etiquetas && producto.etiquetas.some(e => normalizarTexto(e).includes("nuevo"));
+    if (categoriaActiva === 'OFERTAS') return true;
+    if (categoriaActiva === 'HOMBRE') return catProd.includes("hombre") || esSinGenero;
+    if (categoriaActiva === 'MUJER') return catProd.includes("mujer") || esSinGenero;
+    if (categoriaActiva === 'ACCESORIOS') return esSinGenero;
+    if (categoriaActiva === 'ROPA') return esPrendaVestir;
+    if (categoriaActiva === 'MOCHILAS') return catProd.includes("mochila");
 
     return catProd === normalizarTexto(categoriaActiva);
   });
@@ -157,8 +139,7 @@ function App() {
         header: 'bg-gray-950 border-gray-800 text-white',
         textoSecundario: 'text-gray-400',
         input: 'bg-gray-800 border-gray-700 text-white',
-        icono: 'text-white',
-        badge: 'bg-gray-700 text-gray-200'
+        icono: 'text-white'
       };
     }
     if (tema === 'verde') {
@@ -168,8 +149,7 @@ function App() {
         header: 'bg-emerald-950 border-emerald-800 text-white',
         textoSecundario: 'text-emerald-300',
         input: 'bg-emerald-900 border-emerald-700 text-white',
-        icono: 'text-white',
-        badge: 'bg-emerald-800 text-emerald-100'
+        icono: 'text-white'
       };
     }
     return {
@@ -178,8 +158,7 @@ function App() {
       header: 'bg-white border-gray-200 text-black',
       textoSecundario: 'text-gray-500',
       input: 'bg-gray-50 border-gray-300 text-gray-800',
-      icono: 'text-black',
-      badge: 'bg-gray-100 text-gray-700'
+      icono: 'text-black'
     };
   };
 
@@ -188,37 +167,35 @@ function App() {
   return (
     <div className={`min-h-screen ${clases.bg} font-sans relative antialiased transition-colors duration-300`}>
       
-      {/* BARRA DE NOTIFICACIÓN SUPERIOR */}
-      <div className="bg-black text-white text-[10px] py-2 text-center font-semibold tracking-wider uppercase px-4 relative overflow-hidden h-12 flex items-center justify-center">
+      {/* 🐈‍⬛ BARRA DE NOTIFICACIÓN SUPERIOR (EL GATO PERSIGUE AL MOSQUITO) */}
+      <div className="bg-black text-white text-[10px] md:text-xs py-2 text-center font-semibold tracking-wider uppercase px-4 relative overflow-hidden h-12 flex items-center justify-center">
         <span className="relative z-10 select-none">
           Envíos a todo el país • Tu confianza es nuestra prioridad
         </span>
+        <div className="absolute inset-0 flex items-center animate-[marquee_15s_linear_infinite] pointer-events-none whitespace-nowrap">
+          <div className="flex items-center space-x-6">
+            <span className="text-3xl select-none inline-block transform -scale-x-100">🐈‍⬛</span>
+            <span className="text-[10px] opacity-90 animate-pulse inline-block transform -scale-x-100">🦟</span>
+          </div>
+        </div>
       </div>
 
       {/* NAVBAR PRINCIPAL */}
       <header className={`border-b ${clases.header} sticky top-0 z-40 shadow-xs transition-colors duration-300`}>
         <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
           
-          {/* MARCA + LOGO DE GATO */}
           <div className="flex items-center space-x-3 select-none cursor-pointer group">
-            <div className="w-12 h-12 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center overflow-hidden border border-gray-700 shadow-sm">
-              <img 
-                src="/LOGO GATO.png" 
-                alt="Logo Wara'Store" 
-                className="w-full h-full object-cover scale-[1.1]"
-              />
+            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center overflow-hidden border border-gray-700">
+              <img src="/LOGO GATO.png" alt="Logo Wara'Store" className="w-full h-full object-cover scale-[1.1]" />
             </div>
-            <span className="text-xl md:text-2xl font-black tracking-tight">
-              WARA'STORE
-            </span>
+            <span className="text-xl md:text-2xl font-black tracking-tight">WARA'STORE</span>
           </div>
 
-          {/* CONTROLES (SELECTOR TEMAS + BOLSA COMPRAS) */}
           <div className="flex items-center space-x-3">
             <div className="flex items-center bg-gray-200/50 p-1 rounded-lg border border-gray-300/30">
-              <button onClick={() => setTema('claro')} className={`px-2 py-1 text-[10px] font-bold rounded-md cursor-pointer ${tema === 'claro' ? 'bg-white text-black' : 'text-gray-500'}`}>Claro</button>
-              <button onClick={() => setTema('oscuro')} className={`px-2 py-1 text-[10px] font-bold rounded-md cursor-pointer ${tema === 'oscuro' ? 'bg-gray-800 text-white' : 'text-gray-500'}`}>Oscuro</button>
-              <button onClick={() => setTema('verde')} className={`px-2 py-1 text-[10px] font-bold rounded-md cursor-pointer ${tema === 'verde' ? 'bg-emerald-600 text-white' : 'text-emerald-700'}`}>Verde</button>
+              <button onClick={() => setTema('claro')} className={`px-2 py-1 text-[10px] font-bold rounded-md cursor-pointer ${tema === 'claro' ? 'bg-white text-black shadow-xs' : 'text-gray-500'}`}>Claro</button>
+              <button onClick={() => setTema('oscuro')} className={`px-2 py-1 text-[10px] font-bold rounded-md cursor-pointer ${tema === 'oscuro' ? 'bg-gray-800 text-white shadow-xs' : 'text-gray-500'}`}>Oscuro</button>
+              <button onClick={() => setTema('verde')} className={`px-2 py-1 text-[10px] font-bold rounded-md cursor-pointer ${tema === 'verde' ? 'bg-emerald-600 text-white shadow-xs' : 'text-emerald-700'}`}>Verde</button>
             </div>
 
             <button onClick={() => setCarritoAbierto(true)} className={`relative p-1 ${clases.icono}`}>
@@ -235,33 +212,6 @@ function App() {
         </div>
       </header>
 
-      {/* 📍 SECCIÓN DE INFORMACIÓN DE LA TIENDA Y HORARIOS (NUEVO) */}
-      <section className="max-w-7xl mx-auto px-4 mt-6">
-        <div className={`p-4 rounded-xl border grid grid-cols-1 md:grid-cols-2 gap-4 text-xs ${clases.card}`}>
-          <div>
-            <h4 className="font-extrabold text-sm uppercase text-emerald-500 mb-2 flex items-center gap-1">
-              📍 Ubicación y Puesto Físico
-            </h4>
-            <p className="font-semibold">Puesto 46 (Frente a la Galería San Antonio)</p>
-            <a 
-              href="https://maps.app.goo.gl/1PKiQH6AnM3Uo3gX6" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-blue-500 underline font-bold mt-1 inline-block hover:text-blue-600"
-            >
-              Ver mapa en Google Maps →
-            </a>
-          </div>
-          <div>
-            <h4 className="font-extrabold text-sm uppercase text-emerald-500 mb-2 flex items-center gap-1">
-              ⏰ Horarios de Atención y Entregas
-            </h4>
-            <p><span className="font-bold">Días de Feria (Puesto Físico):</span> Miércoles y Sábados</p>
-            <p className="mt-1"><span className="font-bold">Entregas Extras:</span> En el <span className="underline font-semibold text-amber-500">Correo</span>, previa coordinación por WhatsApp.</p>
-          </div>
-        </div>
-      </section>
-
       {/* SECCIÓN PRINCIPAL DE PRODUCTOS */}
       <main className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6 border-b border-gray-200/20 pb-2">
@@ -275,15 +225,14 @@ function App() {
           </div>
         ) : productosFiltrados.length === 0 ? (
           <div className="text-center py-16 px-4 border border-dashed border-gray-300/30 rounded-xl max-w-xl mx-auto">
-            <p className="text-base font-bold">Aún no contamos con ese producto,</p>
-            <p className="text-xs text-gray-400 mt-2">se vienen cositas :)</p>
+            <p className="text-base font-bold">Aún no contamos con ese producto.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {productosFiltrados.map((producto) => {
               const tipoSel = tiposCantidadSeleccionados[producto._id] || 'unidad';
               const precioMostrado = obtenerPrecioActual(producto, tipoSel);
-              const colorSel = coloresSeleccionados[producto._id] || (producto.colores && producto.colores[0]);
+              const colorSel = coloresSeleccionados[producto._id] || COLORES_DISPOLIBLES || '';
 
               return (
                 <div key={producto._id} className={`${clases.card} rounded-md overflow-hidden border hover:shadow-md transition-all duration-300 flex flex-col justify-between`}>
@@ -296,63 +245,32 @@ function App() {
                       <p className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">{producto.categoria}</p>
                       <h3 className="text-xs font-bold mt-0.5 line-clamp-2 h-8">{producto.nombre}</h3>
                       
-                      {/* 🎨 SELECCIÓN DE COLORES (NUEVO) */}
-                      {producto.colores && producto.colores.length > 0 && (
-                        <div className="mt-2">
-                          <label className="text-[10px] font-bold block text-gray-400 uppercase mb-1">Color disponible:</label>
-                          <div className="flex flex-wrap gap-1">
-                            {producto.colores.map(color => (
-                              <button
-                                key={color}
-                                onClick={() => setColoresSeleccionados({ ...coloresSeleccionados, [producto._id]: color })}
-                                className={`text-[9px] px-2 py-0.5 font-bold rounded border transition-all ${
-                                  colorSel === color 
-                                    ? 'bg-emerald-500 text-white border-emerald-500' 
-                                    : 'bg-transparent border-gray-400/40 text-current opacity-70'
-                                }`}
-                              >
-                                {color}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      {/* 🎨 MENÚ DESPLEGABLE DE COLORES */}
+                      <div className="mt-2">
+                        <label className="text-[10px] font-bold block text-gray-400 uppercase mb-1">Color disponible:</label>
+                        <select 
+                          value={colorSel}
+                          onChange={(e) => setColoresSeleccionados({ ...coloresSeleccionados, [producto._id]: e.target.value })}
+                          className={`w-full text-xs font-semibold p-1.5 rounded border ${clases.input} outline-none cursor-pointer`}
+                        >
+                          {COLORES_DISPONIBLES.map(color => (
+                            <option key={color} value={color}>{color}</option>
+                          ))}
+                        </select>
+                      </div>
 
-                      {/* 📦 SELECCIÓN DE CANTIDAD / MODALIDAD (NUEVO) */}
-                      <div className="mt-2.5">
+                      {/* 📦 MENÚ DESPLEGABLE DE CANTIDAD/MODALIDAD */}
+                      <div className="mt-3">
                         <label className="text-[10px] font-bold block text-gray-400 uppercase mb-1">Precio por cantidad:</label>
-                        <div className="grid grid-cols-3 gap-1">
-                          <button
-                            onClick={() => setTiposCantidadSeleccionados({ ...tiposCantidadSeleccionados, [producto._id]: 'unidad' })}
-                            className={`text-[9px] py-1 font-bold rounded border text-center ${
-                              tipoSel === 'unidad' ? 'bg-black text-white' : 'bg-gray-100/10 text-current'
-                            }`}
-                          >
-                            Unidad
-                          </button>
-                          
-                          {producto.precio_cuarta && (
-                            <button
-                              onClick={() => setTiposCantidadSeleccionados({ ...tiposCantidadSeleccionados, [producto._id]: 'cuarta' })}
-                              className={`text-[9px] py-1 font-bold rounded border text-center ${
-                                tipoSel === 'cuarta' ? 'bg-black text-white' : 'bg-gray-100/10 text-current'
-                              }`}
-                            >
-                              Cuarta
-                            </button>
-                          )}
-
-                          {producto.precio_docena && (
-                            <button
-                              onClick={() => setTiposCantidadSeleccionados({ ...tiposCantidadSeleccionados, [producto._id]: 'docena' })}
-                              className={`text-[9px] py-1 font-bold rounded border text-center ${
-                                tipoSel === 'docena' ? 'bg-black text-white' : 'bg-gray-100/10 text-current'
-                              }`}
-                            >
-                              Docena
-                            </button>
-                          )}
-                        </div>
+                        <select 
+                          value={tipoSel}
+                          onChange={(e) => setTiposCantidadSeleccionados({ ...tiposCantidadSeleccionados, [producto._id]: e.target.value })}
+                          className={`w-full text-xs font-semibold p-1.5 rounded border ${clases.input} outline-none cursor-pointer`}
+                        >
+                          <option value="unidad">Por Unidad</option>
+                          <option value="cuarta">Por Cuarta</option>
+                          <option value="docena">Por Docena</option>
+                        </select>
                       </div>
                     </div>
 
@@ -372,6 +290,52 @@ function App() {
           </div>
         )}
       </main>
+
+      {/* 📍 SECCIÓN DE UBICACIÓN, HORARIOS Y VISTA PREVIA DEL MAPA (ABAJO DE LA COLECCIÓN) */}
+      <section className="max-w-7xl mx-auto px-4 py-8 border-t border-gray-200/20">
+        <div className={`p-5 rounded-xl border grid grid-cols-1 md:grid-cols-2 gap-6 text-xs shadow-xs ${clases.card}`}>
+          <div className="flex flex-col justify-between space-y-4">
+            <div>
+              <h4 className="font-extrabold text-sm uppercase text-emerald-500 mb-2">
+                📍 Puesto Físico y Referencia
+              </h4>
+              <p className="font-bold text-sm">Puesto 46</p>
+              <p className="text-gray-400 mt-0.5 font-semibold">Frente a la Galería San Antonio</p>
+            </div>
+
+            <div>
+              <h4 className="font-extrabold text-sm uppercase text-emerald-500 mb-2">
+                ⏰ Horarios de Atención (6:00 AM - 10:00 PM)
+              </h4>
+              <p><span className="font-bold">Días de Feria en Puesto:</span> Miércoles y Sábados</p>
+              <p className="mt-1"><span className="font-bold">Entregas coordinadas:</span> En el <span className="underline font-bold text-amber-500">Correo</span>, previo acuerdo por WhatsApp cualquier otro día.</p>
+            </div>
+
+            <div>
+              <a 
+                href="https://maps.app.goo.gl/1PKiQH6AnM3Uo3gX6" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded uppercase tracking-wider transition-colors"
+              >
+                Abrir en la App de Maps →
+              </a>
+            </div>
+          </div>
+
+          {/* 🗺️ VISTA PREVIA EN VIVO DE GOOGLE MAPS */}
+          <div className="w-full h-60 md:h-full min-h-[240px] rounded-lg overflow-hidden border border-gray-300/30 shadow-xs relative">
+            <iframe 
+              title="Mapa de Ubicación Wara'Store"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3809.689728096181!2d-66.15549000000001!3d-17.404989999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDI0JzE4LjAiUyA2NiswOScxOS44Ilc!5e0!3m2!1ses!2sbo!4v1700000000000!5m2!1ses!2sbo" 
+              className="absolute inset-0 w-full h-full border-0"
+              allowFullScreen="" 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </section>
 
       {/* SIDEBAR DEL CARRITO */}
       {carritoAbierto && (
@@ -417,7 +381,7 @@ function App() {
 
       {/* Botón flotante de WhatsApp */}
       <a 
-        href={`https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent("¡Hola Wara'Store! Deseo hacer una consulta sobre los productos.")}`}
+        href={`https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent("¡Hola Wara'Store! Deseo hacer una consulta.")}`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 bg-emerald-500 hover:bg-emerald-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-xl z-50 cursor-pointer"
