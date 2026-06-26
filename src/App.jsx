@@ -209,8 +209,9 @@ function App() {
           {/* CONTROLES (SELECTOR TEMAS + BOLSA COMPRAS) */}
           <div className="flex items-center space-x-3 md:space-x-4">
             <div className="flex items-center bg-gray-200/50 p-1 rounded-lg border border-gray-300/30">
+              {/* ✅ CORRECCIÓN AQUÍ: Ahora llama correctamente a setTema */}
               <button 
-                onClick={() => setTheme('claro')} 
+                onClick={() => setTema('claro')} 
                 className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${tema === 'claro' ? 'bg-white text-black shadow-xs' : 'text-gray-500 hover:text-black'}`}
               >
                 Claro
@@ -362,7 +363,7 @@ function App() {
         </div>
       )}
 
-      {/* Botón flotante de WhatsApp adaptable */}
+      {/* Botón flotante de WhatsApp */}
       <a 
         href={`https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent("¡Hola Wara'Store! Deseo hacer una consulta sobre los productos.")}`}
         target="_blank"
