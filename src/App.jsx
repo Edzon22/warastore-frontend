@@ -318,7 +318,7 @@ function App() {
                 📍 Puesto Físico Exacto
               </h4>
               <p className="font-bold text-sm">Puesto 46</p>
-              <p className="text-gray-400 mt-0.5 font-semibold">Ubicación exacta corregida en el mapa</p>
+              <p className="text-gray-400 mt-0.5 font-semibold">Frente a la Galeria San Antonio</p>
             </div>
 
             <div>
@@ -345,7 +345,7 @@ function App() {
           <div className="w-full h-60 md:h-full min-h-[240px] rounded-lg overflow-hidden border border-gray-300/30 shadow-xs relative">
             <iframe 
               title="Mapa de Ubicación Exacta Wara'Store"
-              src="https://maps.google.com/maps?q=Cochabamba,%20Bolivia&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+              src="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
               className="absolute inset-0 w-full h-full border-0"
               allowFullScreen="" 
               loading="lazy" 
