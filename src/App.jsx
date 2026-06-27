@@ -325,6 +325,16 @@ function App() {
               </h4>
               <p className="font-bold text-sm">Puesto 46</p>
               <p className="text-gray-400 mt-0.5 font-semibold">Frente a la Galeria San Antonio</p>
+              
+              {/* 📲 El botón se movió aquí, justo debajo de la referencia física */}
+              <a 
+                href="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded uppercase tracking-wider transition-colors cursor-pointer mt-3"
+              >
+                Abrir en la App de Maps →
+              </a>
             </div>
 
             <div>
@@ -333,17 +343,6 @@ function App() {
               </h4>
               <p><span className="font-bold">Días de Feria en Puesto:</span> Miércoles y Sábados</p>
               <p className="mt-1"><span className="font-bold">Entregas coordinadas:</span> En el <span className="underline font-bold text-amber-500">Correo</span>, previo acuerdo por WhatsApp cualquier otro día.</p>
-            </div>
-
-            <div>
-              <a 
-                href="https://maps.app.goo.gl/jwJb8QDTrRPsS2Ff8?g_st=aw" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded uppercase tracking-wider transition-colors cursor-pointer"
-              >
-                Abrir en la App de Maps →
-              </a>
             </div>
           </div>
 
