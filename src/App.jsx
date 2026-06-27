@@ -5,6 +5,7 @@ function App() {
   const [carrito, setCarrito] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null); // 👈 NUEVO: Guarda el producto para abrirlo grande
   
   // ESTADO PARA EL TEMA: 'claro', 'oscuro', 'verde'
   const [tema, setTema] = useState('claro');
@@ -244,9 +245,14 @@ function App() {
 
               return (
                 <div key={producto._id} className={`${clases.card} rounded-md overflow-hidden border hover:shadow-md transition-all duration-300 flex flex-col justify-between`}>
-                  <div className="relative aspect-square bg-gray-100 overflow-hidden">
-                    <img src={(producto.imagenes && producto.imagenes[0]) || 'https://via.placeholder.com/300'} alt={producto.nombre} className="w-full h-full object-cover" />
-                  </div>
+                 <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                   <img 
+                     src={(producto.imagenes && producto.imagenes[0]) || 'https://via.placeholder.com/300'} 
+                     alt={producto.nombre} 
+                     className="w-full h-full object-cover cursor-zoom-in hover:scale-105 transition-transform duration-300" // 👈 Modificado para el efecto visual
+                     onClick={() => setProductoSeleccionado(producto)} // 👈 NUEVO: Al hacer clic se selecciona
+                   />
+                </div>
 
                   <div className="p-3 flex-grow flex flex-col justify-between">
                     <div>
@@ -406,6 +412,83 @@ function App() {
       >
         <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.858.002-2.634-1.013-5.112-2.86-6.961C16.634 1.937 14.159 1.921 11.53 1.92c-5.438 0-9.863 4.42-9.866 9.862-.001 1.702.461 3.366 1.337 4.815l-.997 3.644 3.737-.981z"/></svg>
       </a>
+
+      {/* 🔍 MODAL: VISTA DETALLADA Y AGRANDADA DEL PRODUCTO */}
+      {productoSeleccionado && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+          {/* Fondo oscuro para cerrar al hacer clic fuera */}
+          <div className="absolute inset-0" onClick={() => setProductoSeleccionado(null)}></div>
+          
+          {/* Contenedor del producto (3 veces más grande que la tarjeta normal) */}
+          <div className={`relative w-full max-w-3xl ${clases.card} rounded-xl overflow-hidden shadow-2xl z-50 grid grid-cols-1 md:grid-cols-2 animate-in fade-in zoom-in-95 duration-200`}>
+            
+            {/* Botón de cerrar (X) */}
+            <button 
+              onClick={() => setProductoSeleccionado(null)} 
+              className="absolute top-4 right-4 text-gray-400 hover:text-current p-2 font-bold text-lg z-10 cursor-pointer"
+            >
+              ✕
+            </button>
+
+            {/* Imagen del Producto en Grande */}
+            <div className="bg-gray-100 aspect-square flex items-center justify-center overflow-hidden">
+              <img 
+                src={(productoSeleccionado.imagenes && productoSeleccionado.imagenes[0]) || 'https://via.placeholder.com/300'} 
+                alt={productoSeleccionado.nombre} 
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Detalles Interactivos */}
+            <div className="p-6 flex flex-col justify-between space-y-4">
+              <div>
+                <p className="text-xs font-bold tracking-widest text-emerald-500 uppercase">{productoSeleccionado.categoria || 'General'}</p>
+                <h3 className="text-xl font-black mt-1 leading-tight">{productoSeleccionado.nombre}</h3>
+                
+                {/* Visualizador de Precios Mayoristas de la base de datos */}
+                <div className="mt-4 grid grid-cols-3 gap-2 text-center bg-gray-500/5 p-3 rounded-lg border border-gray-300/10">
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">Unidad</p>
+                    <p className="text-sm font-extrabold text-emerald-500">Bs. {productoSeleccionado.precio_actual}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">Cuarta</p>
+                    <p className="text-sm font-extrabold text-emerald-500">Bs. {productoSeleccionado.precio_cuarta || (productoSeleccionado.precio_actual * 3)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">Docena</p>
+                    <p className="text-sm font-extrabold text-emerald-500">Bs. {productoSeleccionado.precio_docena || (productoSeleccionado.precio_actual * 10)}</p>
+                  </div>
+                </div>
+
+                {/* Info de Tallas Disponibles */}
+                <div className="mt-4">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Tallas Disponibles:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {productoSeleccionado.tallas && productoSeleccionado.tallas.map((talla) => (
+                      <span key={talla} className="px-2 py-1 text-[10px] font-bold bg-black/5 dark:bg-white/10 border border-gray-300/20 rounded-sm">
+                        {talla}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Botón de acción directa */}
+              <button 
+                onClick={() => {
+                  agregarAlCarrito(productoSeleccionado);
+                  setProductoSeleccionado(null);
+                }} 
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 uppercase tracking-widest rounded-lg cursor-pointer transition-colors"
+              >
+                Añadir a la bolsa de compras
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* 📝 PIE DE PÁGINA OFICIAL AGREGADO AQUÍ 🎯 */}
       <footer className="w-full text-center py-6 border-t border-gray-200/10 text-gray-400 text-xs tracking-wide mt-8">
