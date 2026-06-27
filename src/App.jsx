@@ -491,7 +491,7 @@ function App() {
 
       {/* 📝 PIE DE PÁGINA OFICIAL AGREGADO AQUÍ 🎯 */}
       <footer className="w-full text-center py-6 border-t border-gray-200/10 text-gray-400 text-xs tracking-wide mt-8">
-        <p>© 2026 Wara'Store. Todos los derechos reservados.</p>
+        <p>© 2026 Wara'Store. Todos los derechos reservados. WAPS -_-</p>
       </footer>
 
     </div>
